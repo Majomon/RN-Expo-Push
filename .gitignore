@@ -3,6 +3,10 @@
 # dependencies
 node_modules/
 
+#Firebase
+Expo-Push-Notifications-Firebase.json
+google-services.json
+
 # Expo
 .expo/
 dist/
