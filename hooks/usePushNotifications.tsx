@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
+import { router } from "expo-router";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -59,18 +60,22 @@ async function registerForPushNotificationsAsync() {
   if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
+
     let finalStatus = existingStatus;
+
     if (existingStatus !== "granted") {
-      // Importante
+      // IMPORTANTE
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
+
     if (finalStatus !== "granted") {
       handleRegistrationError(
         "Permission not granted to get push token for push notification!"
       );
       return;
     }
+
     const projectId =
       Constants?.expoConfig?.extra?.eas?.projectId ??
       Constants?.easConfig?.projectId;
@@ -95,11 +100,12 @@ async function registerForPushNotificationsAsync() {
 
 let areListenersReady = false;
 
-export const usePushNotification = () => {
+export const usePushNotifications = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notifications, setNotifications] = useState<
     Notifications.Notification[]
   >([]);
+
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
@@ -118,16 +124,21 @@ export const usePushNotification = () => {
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        setNotifications((prevNotificaciones) => [
+        setNotifications((prevNotifications) => [
           notification,
-          ...prevNotificaciones,
+          ...prevNotifications,
         ]);
       });
 
-    // Que hacer cuando se recibe la notificación
-      responseListener.current =
+    responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
+        console.log(JSON.stringify(response, null, 2));
+
+        const { chatId } = response.notification.request.content.data;
+
+        if (chatId) {
+          router.push(`/chat/${chatId}`);
+        }
       });
 
     return () => {
@@ -141,10 +152,11 @@ export const usePushNotification = () => {
   }, []);
 
   return {
-    //Properties
+    // Properties
     expoPushToken,
     notifications,
-    //Methods
+
+    // Methods
     sendPushNotification,
   };
 };
