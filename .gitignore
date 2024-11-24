@@ -7,6 +7,9 @@ node_modules/
 Expo-Push-Notifications-Firebase.json
 google-services.json
 
+#Android
+android/
+
 # Expo
 .expo/
 dist/

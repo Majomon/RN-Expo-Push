@@ -124,7 +124,8 @@ export const usePushNotification = () => {
         ]);
       });
 
-    responseListener.current =
+    // Que hacer cuando se recibe la notificación
+      responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log(response);
       });
