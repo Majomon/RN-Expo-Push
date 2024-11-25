@@ -132,12 +132,14 @@ export const usePushNotifications = () => {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(JSON.stringify(response, null, 2));
+        // console.log(JSON.stringify(response, null, 2));
 
         const { chatId } = response.notification.request.content.data;
 
         if (chatId) {
-          router.push(`/chat/${chatId}`);
+          setTimeout(() => {
+            router.push(`/chat/${chatId}`);
+          }, 200);
         }
       });
 
